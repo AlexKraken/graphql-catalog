@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { getAuthorsQuery, addBookMutation } from '../queries/queries'
+import { getAuthorsQuery, addBookMutation, getBooksQuery } from '../queries/queries'
 
 function AuthorList() {
     const { loading, error, data } = useQuery(getAuthorsQuery)
+    const [addBook] = useMutation(addBookMutation)
     const [name, setName] = useState("")
     const [genre, setGenre] = useState("")
     const [authorId, setAuthorId] = useState("")
@@ -19,13 +20,14 @@ function AuthorList() {
 
     const submitForm = e => {
         e.preventDefault()
-        
-        console.log(name, genre, authorId)
+        addBook({
+            variables: {name, genre, authorId}, 
+            refetchQueries: [{query: getBooksQuery}]
+        })
     }
 
     return (
         <form id="add-book" onSubmit={submitForm.bind(this)}>
-
             <div className="field">
                 <label>Book name:</label>
                 <input type="text" onChange={e => setName(e.target.value)}/>
